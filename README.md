@@ -4,7 +4,7 @@
 
 # Term::Spinner
 
-![spec status](https://github.com/crystal-term/screen/workflows/specs/badge.svg)
+![spec status](https://github.com/crystal-term/spinner/workflows/specs/badge.svg)
 
 > A terminal spinner for tasks that have non-deterministic time frame.
 
