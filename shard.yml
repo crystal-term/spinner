@@ -6,9 +6,8 @@ authors:
 
 dependencies:
   cursor:
-    path: ../cursor
-    # github: crystal-term/cursor
-    # branch: master
+    github: crystal-term/cursor
+    branch: master
 
 crystal: 0.34.0
 
