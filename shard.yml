@@ -1,0 +1,15 @@
+name: spinner
+version: 0.1.0
+
+authors:
+  - Chris Watson <cawatson1993@gmail.com>
+
+dependencies:
+  cursor:
+    path: ../cursor
+    # github: crystal-term/cursor
+    # branch: master
+
+crystal: 0.34.0
+
+license: MIT
