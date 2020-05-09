@@ -1,4 +1,4 @@
-require "cursor"
+require "term-cursor"
 
 require "./spinner/formats"
 require "./spinner/version"

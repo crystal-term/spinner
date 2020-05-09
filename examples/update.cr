@@ -1,4 +1,4 @@
-require "../src/spinner"
+require "../src/term-spinner"
 
 spinner = Term::Spinner.new(":spinner :title", format: :pulse_3)
 

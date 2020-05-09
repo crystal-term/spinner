@@ -1,4 +1,4 @@
-require "../src/spinner"
+require "../src/term-spinner"
 
 spinner = Term::Spinner.new("[:spinner] Task name", format: :bouncing_ball)
 
