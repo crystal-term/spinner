@@ -31,7 +31,7 @@
 First the library must be required:
 
 ```crystal
-require "spinner"
+require "term-spinner"
 ```
 
 `Term::Spinner` by default requires no arguments and defaults to the `:classic` formatter:
