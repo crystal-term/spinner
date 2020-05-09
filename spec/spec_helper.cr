@@ -1,2 +1,2 @@
 require "spec"
-require "../src/spinner"
+require "../src/term-spinner"
