@@ -285,6 +285,137 @@ You can change where console output is streamed with `output` option:
 spinner = Term::Spinner.new(output: STDOUT)
 ```
 
+## Term::Spinner::Multi API
+
+### `#register`
+
+Create and register a `Term::Spinner` under the multispinner
+
+```crystal
+new_spinner = multi_spinner.register("[:spinner] Task 1 name", **options)
+# or
+#   spinner = Term::Spinner.new("[:spinner] one")
+#   sp1 = multi_spinner.register(spinner)
+```
+
+If no options are given it will use the options given to the multi_spinner when it was initialized to create the new spinner. If options are passed, they will override any options given to the top level spinner.
+
+### `#auto_spin`
+
+To create a top level spinner that tracks the activity of all the registered spinners, the multispinner has to be given a message on initialization:
+
+```crystal
+spinners = Term::Spinner::Multi.new("[:spinner] Top level spinner")
+```
+
+The top level multi spinner will perform spinning animation automatically when at least one of the registered spinners starts spinning.
+
+If you register spinners without any tasks then you will have to manually control when the multispinner finishes by calling `stop`, `success` or `error`.
+
+Alternatively, you can register spinners with tasks that will automatically animate and finish spinners when respective tasks are done.
+
+The speed with which the spinning happens is determined by the `:interval` parameter. All the spinner formats have their default intervals specified.
+
+#### manual async
+
+In the case where you wish to have complete control over multiple spinners, you will need to perform all actions manually.
+
+For example, create a multispinner that will track the status of all registered spinners:
+
+```crystal
+spinners = Term::Spinner::Multi.new("[:spinner] top")
+```
+
+and then register all spinners with their formats:
+
+```crystal
+sp1 = spinners.register "[:spinner] one"
+sp2 = spinners.register "[:spinner] two"
+```
+
+Once registered, you can set spinners running in separate threads:
+
+```crystal
+sp1.auto_spin
+sp2.auto_spin
+```
+
+Finally, you need to stop each spinner manually, in our case we mark the second spinner as failure which in turn will stop the top level multi spinner automatically and mark it as failure:
+
+```crystal
+sp1.success
+sp2.error
+```
+
+The result may look like this:
+
+```crystal
+┌ [✖] top
+├── [✔] one
+└── [✖] two
+```
+
+#### auto async tasks
+
+In the case when you wish to execute async tasks and update individual spinners automatically, in any order, about their task status use `#register` and pass additional block parameter with the job to be executed.
+
+For example, create a multi spinner that will track status of all registered spinners:
+
+```crystal
+spinners = TTY::Spinner::Multi.new("[:spinner] top")
+```
+
+and then register spinners with their respective tasks:
+
+```crystal
+spinners.register("[:spinner] one") { |sp| sleep(2); sp.success("yes 2") }
+spinners.register("[:spinner] two") { |sp| sleep(3); sp.error("no 2") }
+```
+
+Finally, call `#auto_spin` to kick things off:
+
+```crystal
+spinners.auto_spin
+```
+
+If any of the child spinners stop with an error then the top level spinner will be marked as failure.
+
+### `#stop`
+
+In order to stop the multi spinner call stop. This will stop the top level spinner, if it exists, and any sub-spinners are still spinning.
+
+```crystal
+spinners.stop
+```
+
+### `#success`
+
+Use success call to stop the spinning animation and replace the spinning symbol with a check mark character to indicate successful completion. This will also call `#success` on any sub-spinners that are still spinning.
+
+```crystal
+spinners.success
+```
+
+### `#error`
+
+Use error call to stop the spinning animation and replace the spinning symbol with cross character to indicate error completion. This will also call `#error` on any sub-spinners that are still spinning.
+
+```crystal
+spinners.error
+```
+
+### `:style`
+
+In addition to all the standard `Spinner` configuration options you can style a multispinner like so:
+
+```crystal
+spinner = Term::Spinner::Multi.new("[:spinner] parent", style: {
+  top: ". "
+  middle: "|-> "
+  bottom: "|__ "
+})
+```
+
 ## Events
 
 `Term::Spinner` emits `:done`, `:success`, and `:error` events. You can listen for these using the `#on` method.

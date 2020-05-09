@@ -1,6 +1,7 @@
 require "term-cursor"
 
 require "./spinner/formats"
+require "./spinner/multi"
 require "./spinner/version"
 
 module Term
@@ -33,7 +34,7 @@ module Term
     getter tokens : Hash(String, String)
 
     # The current row inside a multi spinner
-    getter row : Int32
+    getter row : Int32?
 
     # Whether the spinner has completed spinning
     getter? done : Bool
@@ -43,6 +44,8 @@ module Term
 
     # The current spinner state
     getter state : Symbol
+
+    getter multispinner : Multi?
 
     @succeeded : Bool?
     @started_at : Time?
@@ -67,11 +70,11 @@ module Term
       @clear = options[:clear]? ||  false
       @success_mark = options[:success_mark]? || TICK
       @error_mark = options[:error_mark]? || CROSS
-      @row = options[:row]? || 0
+      @row = options[:row]?
       @callbacks = Hash(String, Array(Proc(Spinner, Nil))).new { |h, k| h[k] = [] of Proc(Spinner, Nil) }
       @channel = nil
       @job = nil
-      # @multispinner = nil
+      @multispinner = nil
       @current = 0
       @done = false
       @state = :stopped
@@ -81,19 +84,17 @@ module Term
     end
 
     def reset
-      # @mutex.synchronize do
-        @current = 0
-        @done = false
-        @state = :stopped
-        @succeeded = false
-        @first_run = true
-      # end
+      @current = 0
+      @done = false
+      @state = :stopped
+      @succeeded = false
+      @first_run = true
     end
 
     # Notifies the `Spinner` that it is running under a multispinner
-    # def attach_to(multispinner : Multispinner)
-    #   @multispinner = multispinner
-    # end
+    def attach_to(multispinner : Multi)
+      @multispinner = multispinner
+    end
 
     # Whether the spinner is spinning
     def spinning?
@@ -141,7 +142,7 @@ module Term
       end
 
       write(data, false)
-      write("\n", false) unless @clear #|| @multispinner
+      write("\n", false) unless @clear || @multispinner
     ensure
       @done = true
       @state = :stopped
@@ -191,9 +192,7 @@ module Term
 
     # Get the current job
     def job
-      @mutex.synchronize do
-        @job
-      end
+      @job
     end
 
     # Execute this spinner job
@@ -268,7 +267,7 @@ module Term
     # Redraw the indent for this spinner, if it exists
     def redraw_indent
       if @hide_cursor && !spinning?
-        wite(Term::Cursor.hide)
+        write(Term::Cursor.hide)
       end
 
       write("", false)
@@ -325,11 +324,24 @@ module Term
     end
 
     def execute_on_line(&block)
-      # if multispinner = @multispinner
-      #   yield
-      # else
+      if multispinner = @multispinner
+        multispinner.synchronize do
+          if @first_run
+            @row ||= multispinner.next_row
+            yield
+            output.print "\n"
+            @first_run = false
+          else
+            lines_up = (multispinner.rows + 1) - @row.not_nil!
+            output.print Term::Cursor.save
+            output.print Term::Cursor.up(lines_up)
+            yield
+            output.print Term::Cursor.restore
+          end
+        end
+      else
         yield
-      # end
+      end
     end
 
     private def emit(name)
@@ -345,9 +357,12 @@ module Term
       execute_on_line do
         output.print(Term::Cursor.column(1)) if clear_first
         # If there's a top level spinner, print with inset
-        # characters_in = @multispinner.line_inset(@row) if @multispinner
-        # output.print("#{characters_in}#{data}")
-        output.print(data)
+        if multispinner = @multispinner
+          characters_in = multispinner.line_inset(@row.not_nil!)
+          output.print("#{characters_in}#{data}")
+        else
+          output.print(data)
+        end
         output.flush
       end
     end
