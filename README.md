@@ -20,7 +20,7 @@
 
    ```yaml
    dependencies:
-     cursor:
+     term-spinner:
        github: crystal-term/spinner
    ```
 
