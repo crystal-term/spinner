@@ -12,8 +12,8 @@ module Term
     ECMA_CSI = "\x1b["
 
     MATCHER = /:spinner/
-    TICK = "✔"
-    CROSS = "✖"
+    TICK    = "✔"
+    CROSS   = "✖"
 
     # The object that responds to print call defaulting to stderr
     getter output : IO::FileDescriptor
@@ -67,7 +67,7 @@ module Term
 
       @output = options[:output]? || STDERR
       @hide_cursor = options[:hide_cursor]? || false
-      @clear = options[:clear]? ||  false
+      @clear = options[:clear]? || false
       @success_mark = options[:success_mark]? || TICK
       @error_mark = options[:error_mark]? || CROSS
       @row = options[:row]?

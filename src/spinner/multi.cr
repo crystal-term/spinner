@@ -9,7 +9,7 @@ module Term
       DEFAULT_INSET = {
         top:    "\u250c ",
         middle: "\u251c\u2500\u2500 ",
-        bottom: "\u2514\u2500\u2500 "
+        bottom: "\u2514\u2500\u2500 ",
       }
 
       # The current count of all rendered rows
@@ -25,9 +25,9 @@ module Term
       # spinner = TTY::Spinner::Multi.new
       # ```
       def initialize(message = nil, style = DEFAULT_INSET, **options)
-        @inset_opts  = style
-        @rows        = 0
-        @spinners    = [] of Spinner
+        @inset_opts = style
+        @rows = 0
+        @spinners = [] of Spinner
         @top_spinner = nil
         @last_spin_at = nil
         @fired = false
@@ -35,9 +35,9 @@ module Term
 
         @callbacks = {
           :success => [] of Proc(Spinner, Nil),
-          :error =>   [] of Proc(Spinner, Nil),
-          :done =>    [] of Proc(Spinner, Nil),
-          :spin =>    [] of Proc(Spinner, Nil)
+          :error   => [] of Proc(Spinner, Nil),
+          :done    => [] of Proc(Spinner, Nil),
+          :spin    => [] of Proc(Spinner, Nil),
         }
 
         unless message.nil?
@@ -169,8 +169,8 @@ module Term
       # Listen on event
       def on(key, &callback : Spinner ->)
         unless @callbacks.key?(key)
-          raise ArgumentError.new ("The event #{key} does not exist. " \
-                                   " Use :spin, :success, :error, or :done instead")
+          raise ArgumentError.new("The event #{key} does not exist. " \
+                                  " Use :spin, :success, :error, or :done instead")
         end
         @callbacks[key] << callback
         self
@@ -243,5 +243,5 @@ module Term
         end
       end
     end # MultiSpinner
-  end # Spinner
-end # TTY
+  end   # Spinner
+end     # TTY

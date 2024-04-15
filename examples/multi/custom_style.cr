@@ -1,9 +1,9 @@
 require "../../src/term-spinner"
 
 style = {
-  top: ". ",
+  top:    ". ",
   middle: "|-> ",
-  bottom: "|__ "
+  bottom: "|__ ",
 }
 
 spinners = Term::Spinner::Multi.new "[:spinner] main", style: style, format: :bouncing_ball
