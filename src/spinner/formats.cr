@@ -2,113 +2,113 @@ module Term
   class Spinner
     alias Format = NamedTuple(interval: Int32 | Time::Span, frames: Array(String))
 
-    FORMATS  = {
+    FORMATS = {
       "classic" => {
         interval: 10,
-        frames: ["|", "/", "-", "\\"]
+        frames:   ["|", "/", "-", "\\"],
       },
       "spin" => {
         interval: 10,
-        frames: %w{◴ ◷ ◶ ◵ }
+        frames:   %w{◴ ◷ ◶ ◵},
       },
       "spin_2" => {
         interval: 10,
-        frames: %w{◐ ◓ ◑ ◒ }
+        frames:   %w{◐ ◓ ◑ ◒},
       },
       "spin_3" => {
         interval: 10,
-        frames: %w{◰ ◳ ◲ ◱}
+        frames:   %w{◰ ◳ ◲ ◱},
       },
       "spin_4" => {
         interval: 10,
-        frames: %w{╫ ╪}
+        frames:   %w{╫ ╪},
       },
       "pulse" => {
         interval: 10,
-        frames: %w{⎺ ⎻ ⎼ ⎽ ⎼ ⎻}
+        frames:   %w{⎺ ⎻ ⎼ ⎽ ⎼ ⎻},
       },
       "pulse_2" => {
         interval: 15,
-        frames: %w{▁ ▃ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃ }
+        frames:   %w{▁ ▃ ▅ ▆ ▇ █ ▇ ▆ ▅ ▃},
       },
       "pulse_3" => {
         interval: 20,
-        frames: %w{▉ ▊ ▋ ▌ ▍ ▎ ▏ ▎ ▍ ▌ ▋ ▊ ▉ }
+        frames:   %w{▉ ▊ ▋ ▌ ▍ ▎ ▏ ▎ ▍ ▌ ▋ ▊ ▉},
       },
       "dots" => {
         interval: 10,
-        frames: %w{⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏}
+        frames:   %w{⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏},
       },
       "dots_2" => {
         interval: 10,
-        frames: %w{⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷}
+        frames:   %w{⣾ ⣽ ⣻ ⢿ ⡿ ⣟ ⣯ ⣷},
       },
       "dots_3" => {
         interval: 10,
-        frames: %w{⠋ ⠙ ⠚ ⠞ ⠖ ⠦ ⠴ ⠲ ⠳ ⠓}
+        frames:   %w{⠋ ⠙ ⠚ ⠞ ⠖ ⠦ ⠴ ⠲ ⠳ ⠓},
       },
       "dots_4" => {
         interval: 10,
-        frames: %w{⠄ ⠆ ⠇ ⠋ ⠙ ⠸ ⠰ ⠠ ⠰ ⠸ ⠙ ⠋ ⠇ ⠆}
+        frames:   %w{⠄ ⠆ ⠇ ⠋ ⠙ ⠸ ⠰ ⠠ ⠰ ⠸ ⠙ ⠋ ⠇ ⠆},
       },
       "dots_5" => {
         interval: 10,
-        frames: %w{⠋ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋}
+        frames:   %w{⠋ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋},
       },
       "dots_6" => {
         interval: 10,
-        frames: %w{⠁ ⠉ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠤ ⠄ ⠄ ⠤ ⠴ ⠲ ⠒ ⠂ ⠂ ⠒ ⠚ ⠙ ⠉ ⠁}
+        frames:   %w{⠁ ⠉ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠤ ⠄ ⠄ ⠤ ⠴ ⠲ ⠒ ⠂ ⠂ ⠒ ⠚ ⠙ ⠉ ⠁},
       },
       "dots_7" => {
         interval: 10,
-        frames: %w{⠈ ⠉ ⠋ ⠓ ⠒ ⠐ ⠐ ⠒ ⠖ ⠦ ⠤ ⠠ ⠠ ⠤ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋ ⠉ ⠈}
+        frames:   %w{⠈ ⠉ ⠋ ⠓ ⠒ ⠐ ⠐ ⠒ ⠖ ⠦ ⠤ ⠠ ⠠ ⠤ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋ ⠉ ⠈},
       },
       "dots_8" => {
         interval: 10,
-        frames: %w{⠁ ⠁ ⠉ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠤ ⠄ ⠄ ⠤ ⠠ ⠠ ⠤ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋ ⠉ ⠈ ⠈}
+        frames:   %w{⠁ ⠁ ⠉ ⠙ ⠚ ⠒ ⠂ ⠂ ⠒ ⠲ ⠴ ⠤ ⠄ ⠄ ⠤ ⠠ ⠠ ⠤ ⠦ ⠖ ⠒ ⠐ ⠐ ⠒ ⠓ ⠋ ⠉ ⠈ ⠈},
       },
       "dots_9" => {
         interval: 10,
-        frames: %w{⢹ ⢺ ⢼ ⣸ ⣇ ⡧ ⡗ ⡏}
+        frames:   %w{⢹ ⢺ ⢼ ⣸ ⣇ ⡧ ⡗ ⡏},
       },
       "dots_10" => {
         interval: 10,
-        frames: %w{⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠}
+        frames:   %w{⢄ ⢂ ⢁ ⡁ ⡈ ⡐ ⡠},
       },
       "dots_11" => {
         interval: 10,
-        frames: %w{⠁ ⠂ ⠄ ⡀ ⢀ ⠠ ⠐ ⠈}
+        frames:   %w{⠁ ⠂ ⠄ ⡀ ⢀ ⠠ ⠐ ⠈},
       },
       "arrow" => {
         interval: 10,
-        frames: %w{← ↖ ↑ ↗ → ↘ ↓ ↙ }
+        frames:   %w{← ↖ ↑ ↗ → ↘ ↓ ↙},
       },
       "arrow_pulse" => {
         interval: 10,
-        frames: [
+        frames:   [
           "▹▹▹▹▹",
           "▸▹▹▹▹",
           "▹▸▹▹▹",
           "▹▹▸▹▹",
           "▹▹▹▸▹",
-          "▹▹▹▹▸"
-        ]
+          "▹▹▹▹▸",
+        ],
       },
       "triangle" => {
         interval: 10,
-        frames: %w{◢ ◣ ◤ ◥}
+        frames:   %w{◢ ◣ ◤ ◥},
       },
       "arc" => {
         interval: 10,
-        frames: %w{ ◜ ◠ ◝ ◞ ◡ ◟ }
+        frames:   %w{◜ ◠ ◝ ◞ ◡ ◟},
       },
       "pipe" => {
         interval: 10,
-        frames: %w{ ┤ ┘ ┴ └ ├ ┌ ┬ ┐ }
+        frames:   %w{┤ ┘ ┴ └ ├ ┌ ┬ ┐},
       },
       "bouncing" => {
         interval: 10,
-        frames: [
+        frames:   [
           "[    ]",
           "[   =]",
           "[  ==]",
@@ -116,12 +116,12 @@ module Term
           "[====]",
           "[=== ]",
           "[==  ]",
-          "[=   ]"
-        ]
+          "[=   ]",
+        ],
       },
       "bouncing_ball" => {
         interval: 10,
-        frames: [
+        frames:   [
           "( ●    )",
           "(  ●   )",
           "(   ●  )",
@@ -131,52 +131,52 @@ module Term
           "(   ●  )",
           "(  ●   )",
           "( ●    )",
-          "(●     )"
-        ]
+          "(●     )",
+        ],
       },
       "bounce" => {
         interval: 10,
-        frames: %w{ ⠁ ⠂ ⠄ ⠂ }
+        frames:   %w{⠁ ⠂ ⠄ ⠂},
       },
       "box_bounce" => {
         interval: 10,
-        frames: %w{ ▌ ▀ ▐ ▄  }
+        frames:   %w{▌ ▀ ▐ ▄},
       },
       "box_bounce_2" => {
         interval: 10,
-        frames: %w{ ▖ ▘ ▝ ▗ }
+        frames:   %w{▖ ▘ ▝ ▗},
       },
       "star" => {
         interval: 10,
-        frames: %w{ ✶ ✸ ✹ ✺ ✹ ✷ }
+        frames:   %w{✶ ✸ ✹ ✺ ✹ ✷},
       },
       "toggle" => {
         interval: 10,
-        frames: %w{ ■ □ ▪ ▫ }
+        frames:   %w{■ □ ▪ ▫},
       },
       "balloon" => {
         interval: 10,
-        frames: %w{ . o O @ * }
+        frames:   %w{. o O @ *},
       },
       "balloon_2" => {
         interval: 10,
-        frames: %w{. o O ° O o . }
+        frames:   %w{. o O ° O o .},
       },
       "flip" => {
         interval: 10,
-        frames: %w{- ◡ ⊙ - ◠ }
+        frames:   %w{- ◡ ⊙ - ◠},
       },
       "burger" => {
         interval: 6,
-        frames: %w{ ☱ ☲ ☴ }
+        frames:   %w{☱ ☲ ☴},
       },
       "dance" => {
         interval: 10,
-        frames: [">))'>", " >))'>", "  >))'>", "   >))'>", "    >))'>", "   <'((<", "  <'((<", " <'((<"]
+        frames:   [">))'>", " >))'>", "  >))'>", "   >))'>", "    >))'>", "   <'((<", "  <'((<", " <'((<"],
       },
       "shark" => {
         interval: 10,
-        frames: [
+        frames:   [
           "▐|\\____________▌",
           "▐_|\\___________▌",
           "▐__|\\__________▌",
@@ -202,12 +202,12 @@ module Term
           "▐___/|_________▌",
           "▐__/|__________▌",
           "▐_/|___________▌",
-          "▐/|____________▌"
-        ]
+          "▐/|____________▌",
+        ],
       },
       "pong" => {
         interval: 10,
-        frames: [
+        frames:   [
           "▐⠂       ▌",
           "▐⠈       ▌",
           "▐ ⠂      ▌",
@@ -237,9 +237,9 @@ module Term
           "▐  ⠂     ▌",
           "▐ ⠠      ▌",
           "▐ ⡀      ▌",
-          "▐⠠       ▌"
-        ]
-      }
+          "▐⠠       ▌",
+        ],
+      },
     }
   end
 end

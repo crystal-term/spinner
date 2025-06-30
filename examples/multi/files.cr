@@ -4,7 +4,7 @@ spinners = Term::Spinner::Multi.new "[:spinner] Downloading files..."
 
 ["file 1", "file 2", "file 3"].each do |file|
   spinners.register("[:spinner] #{file}") do |sp|
-    sleep(rand * 5)
+    sleep((rand * 5).seconds)
     sp.success("success")
   end
 end

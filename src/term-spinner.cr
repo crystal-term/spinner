@@ -9,11 +9,18 @@ module Term
     # Raised when attempting to join dead thread
     class NotSpinningError < Exception; end
 
+    # The state of the spinner
+    enum State
+      Stopped
+      Spinning
+      Paused
+    end
+
     ECMA_CSI = "\x1b["
 
     MATCHER = /:spinner/
-    TICK = "✔"
-    CROSS = "✖"
+    TICK    = "✔"
+    CROSS   = "✖"
 
     # The object that responds to print call defaulting to stderr
     getter output : IO::FileDescriptor
@@ -43,7 +50,7 @@ module Term
     getter? first_run : Bool
 
     # The current spinner state
-    getter state : Symbol
+    getter state : State
 
     getter multispinner : Multi?
 
@@ -67,7 +74,7 @@ module Term
 
       @output = options[:output]? || STDERR
       @hide_cursor = options[:hide_cursor]? || false
-      @clear = options[:clear]? ||  false
+      @clear = options[:clear]? || false
       @success_mark = options[:success_mark]? || TICK
       @error_mark = options[:error_mark]? || CROSS
       @row = options[:row]?
@@ -77,7 +84,7 @@ module Term
       @multispinner = nil
       @current = 0
       @done = false
-      @state = :stopped
+      @state = State::Stopped
       @succeeded = nil
       @first_run = true
       @started_at = nil
@@ -86,7 +93,7 @@ module Term
     def reset
       @current = 0
       @done = false
-      @state = :stopped
+      @state = State::Stopped
       @succeeded = false
       @first_run = true
     end
@@ -98,19 +105,19 @@ module Term
 
     # Whether the spinner is spinning
     def spinning?
-      @state == :spinning
+      @state == State::Spinning
     end
 
     # Whether the spinner is paused
     def paused?
-      @state == :paused
+      @state == State::Paused
     end
 
     # Pause the spinner
     def pause
       return if paused?
       @mutex.synchronize do
-        @state = :paused
+        @state = State::Paused
       end
     end
 
@@ -118,13 +125,13 @@ module Term
     def resume
       return unless paused?
       @mutex.synchronize do
-        @state = :spinning
+        @state = State::Spinning
       end
     end
 
     # Whether spinner is stopped
     def stopped?
-      @state == :stopped
+      @state == State::Stopped
     end
 
     # Stop the running spinner
@@ -145,7 +152,7 @@ module Term
       write("\n", false) unless @clear || @multispinner
     ensure
       @done = true
-      @state = :stopped
+      @state = State::Stopped
       @started_at = nil
 
       if @hide_cursor
@@ -259,7 +266,7 @@ module Term
         data = replace_tokens(data)
         write(data, true)
         @current = (@current + 1) % @frames.size
-        @state = :spinning
+        @state = State::Spinning
         data
       end
     end

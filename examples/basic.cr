@@ -4,7 +4,7 @@ spinner = Term::Spinner.new("Loading :spinner ... ", format: :spin_2)
 
 20.times do
   spinner.spin
-  sleep(0.1)
+  sleep(0.1.seconds)
 end
 
 spinner.stop("done")

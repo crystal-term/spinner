@@ -10,7 +10,7 @@ sp1.auto_spin
 sp2.auto_spin
 sp3.auto_spin
 
-sleep(2)
+sleep(2.seconds)
 
 sp1.stop
 sp2.stop
