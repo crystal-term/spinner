@@ -7,6 +7,7 @@ authors:
 dependencies:
   term-cursor:
     github: crystal-term/cursor
+    branch: master
 
 crystal: ">= 1.0.0"
 
