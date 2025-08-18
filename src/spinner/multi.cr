@@ -4,7 +4,7 @@ module Term
     class Multi
       include Enumerable(Spinner)
 
-      delegate :each, :empty?, :length, to: @spinners
+      delegate :each, :empty?, :size, to: @spinners
 
       DEFAULT_INSET = {
         top:    "\u250c ",
@@ -168,7 +168,7 @@ module Term
 
       # Listen on event
       def on(key, &callback : Spinner ->)
-        unless @callbacks.key?(key)
+        unless @callbacks.has_key?(key)
           raise ArgumentError.new("The event #{key} does not exist. " \
                                   " Use :spin, :success, :error, or :done instead")
         end
@@ -204,23 +204,23 @@ module Term
 
       # Observe spinner for events to notify top spinner of current state
       private def observe(spinner)
-        spinner.on(:spin) { spin_handler(spinner) }
-        spinner.on(:success) { success_handler(spinner) }
-        spinner.on(:error) { error_handler(spinner) }
-        spinner.on(:done) { done_handler(spinner) }
+        spinner.on("spin") { spin_handler(spinner) }
+        spinner.on("success") { success_handler(spinner) }
+        spinner.on("error") { error_handler(spinner) }
+        spinner.on("done") { done_handler(spinner) }
       end
 
       # Handle spin event
       private def spin_handler(spinner)
         spin if @top_spinner
-        emit(:spin, spinner)
+        emit("spin", spinner)
       end
 
       # Handle the success state
       private def success_handler(spinner)
         if success?
           @top_spinner.not_nil!.success if @top_spinner
-          emit(:success, spinner)
+          emit("success", spinner)
         end
       end
 
@@ -229,7 +229,7 @@ module Term
         if error?
           @top_spinner.not_nil!.error if @top_spinner
           unless @fired
-            emit(:error, spinner) # fire once
+            emit("error", spinner) # fire once
             @fired = true
           end
         end
@@ -239,7 +239,7 @@ module Term
       private def done_handler(spinner)
         if done?
           @top_spinner.not_nil!.stop if @top_spinner && !error? && !success?
-          emit(:done, spinner)
+          emit("done", spinner)
         end
       end
     end # MultiSpinner
