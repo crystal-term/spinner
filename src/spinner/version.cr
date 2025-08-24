@@ -1,5 +1,5 @@
 module Term
-  module Spinner
+  class Spinner
     VERSION = "0.2.0"
   end
 end
