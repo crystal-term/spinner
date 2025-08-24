@@ -1,2 +1,14 @@
 name: term-spinner
-version: 0.3.1
+version: 0.2.0
+
+authors:
+  - Chris Watson <cawatson1993@gmail.com>
+
+dependencies:
+  term-cursor:
+    github: crystal-term/cursor
+    branch: master
+
+crystal: ">= 1.0.0"
+
+license: MIT
