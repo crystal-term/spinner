@@ -1,5 +1,5 @@
 name: term-spinner
-version: 0.3.0
+version: 0.3.1
 
 authors:
   - Chris Watson <cawatson1993@gmail.com>
@@ -9,7 +9,7 @@ description: Terminal spinners and progress indicators
 dependencies:
   term-cursor:
     github: crystal-term/cursor
-    branch: master
+    version: ~> 0.3.0
 
 development_dependencies:
   spectator:
