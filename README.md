@@ -8,7 +8,7 @@
 
 > A terminal spinner for tasks that have non-deterministic time frame.
 
-**Term::Screen** provides an independent spinner component for crystal-term.
+**Term::Spinner** provides an independent spinner component for crystal-term.
 
 <div align="center">
   <img src="./assets/demo.gif" alt="formats demo">
@@ -84,7 +84,7 @@ The `auto_spin` method performs automatic spinning in its own dedicated fiber.
 spinner.auto_spin
 ```
 
-The speed at which the spinning occurs is determined by the `interval` parameter, or defaults to the given `format` interval. The interval is a number in hertz, or `(n * 100) milliseconds`.
+The speed at which the spinning occurs is determined by the `interval` parameter, or defaults to the given `format` interval. The interval is a number in hertz; `n` means `1000/n` milliseconds per frame.
 
 ### `#pause`
 
@@ -181,7 +181,7 @@ Use `update` to dynamically change label name(s). Labels can be used like `:spin
 Provide arbitrary token name(s) in the message string, such as `:status`:
 
 ```crystal
-spinner = TTY::Spinner.new("[:spinner] :status")
+spinner = Term::Spinner.new("[:spinner] :status")
 ```
 
 and then pass token name and value:
@@ -223,7 +223,7 @@ Use one of the prefefined spinner styles by passing the formatting token `:forma
 spinner = Term::Spinner.new(format: :pulse_2)
 ```
 
-All accepted formats are located in [/src/spinner/format.cr](https://github.com/crystal-term/spinner/blob/master/src/spinner/format.cr)
+All accepted formats are located in [/src/spinner/formats.cr](https://github.com/crystal-term/spinner/blob/master/src/spinner/formats.cr)
 
 If you want an example of each of the formats in action, you can try running [/examples/formats.cr](https://github.com/crystal-term/spinner/blob/master/examples/formats.cr)
 
@@ -362,7 +362,7 @@ In the case when you wish to execute async tasks and update individual spinners 
 For example, create a multi spinner that will track status of all registered spinners:
 
 ```crystal
-spinners = TTY::Spinner::Multi.new("[:spinner] top")
+spinners = Term::Spinner::Multi.new("[:spinner] top")
 ```
 
 and then register spinners with their respective tasks:
