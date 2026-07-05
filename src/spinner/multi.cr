@@ -177,9 +177,7 @@ module Term
       end
 
       def synchronize(&block)
-        @mutex.lock
-        yield
-        @mutex.unlock
+        @mutex.synchronize { yield }
       end
 
       # Check if this spinner should revolve to keep constant speed

@@ -23,7 +23,7 @@ module Term
     CROSS   = "✖"
 
     # The object that responds to print call defaulting to stderr
-    getter output : IO::FileDescriptor
+    getter output : IO
 
     # Whether to show or hide the cursor
     getter hide_cursor : Bool
@@ -57,7 +57,6 @@ module Term
     @succeeded : Bool?
     @started_at : Time?
     @callbacks : Hash(String, Array(Proc(Spinner, Nil)))
-    @channel : Channel(Nil)?
     @work : Channel(Nil)?
     @job : Proc(Spinner, Nil)?
     @mutex : Mutex
@@ -70,7 +69,7 @@ module Term
       format = FORMATS[options.fetch(:format, :classic).to_s]
       @frames = options[:frames]? || format[:frames]
       interval = options[:interval]? || format[:interval]? || 10
-      @interval = interval.is_a?(Time::Span) ? interval : (interval * 10).milliseconds
+      @interval = interval.is_a?(Time::Span) ? interval : (1000 // interval).milliseconds
 
       @output = options[:output]? || STDERR
       @hide_cursor = options[:hide_cursor]? || false
@@ -79,7 +78,6 @@ module Term
       @error_mark = options[:error_mark]? || CROSS
       @row = options[:row]?
       @callbacks = Hash(String, Array(Proc(Spinner, Nil))).new { |h, k| h[k] = [] of Proc(Spinner, Nil) }
-      @channel = nil
       @job = nil
       @multispinner = nil
       @current = 0
@@ -138,30 +136,30 @@ module Term
     def stop(stop_message = "")
       return if done?
 
-      clear_line
-      return if @clear
+      begin
+        clear_line
+        return if @clear
 
-      data = message.gsub(MATCHER, next_char)
-      data = replace_tokens(data)
+        data = message.gsub(MATCHER, next_char)
+        data = replace_tokens(data)
 
-      unless stop_message.empty?
-        data += " " + stop_message
+        unless stop_message.empty?
+          data += " " + stop_message
+        end
+
+        write(data, false)
+        write("\n", false) unless @clear || @multispinner
+      ensure
+        @done = true
+        @state = State::Stopped
+        @started_at = nil
+
+        if @hide_cursor
+          write(Term::Cursor.show, false)
+        end
+
+        emit(:done)
       end
-
-      write(data, false)
-      write("\n", false) unless @clear || @multispinner
-    ensure
-      @done = true
-      @state = State::Stopped
-      @started_at = nil
-
-      if @hide_cursor
-        write(Term::Cursor.show, false)
-      end
-
-      emit(:done)
-      # kill
-      # @mutex.unlock
     end
 
     # Whether the spinner is in the success state.
@@ -220,14 +218,11 @@ module Term
       sleep_time = @interval
 
       spin
-      @channel = Channel(Nil).new.tap do |ch|
-        spawn(same_thread: true) do
+      spawn(same_thread: true) do
+        sleep(sleep_time)
+        until stopped?
           sleep(sleep_time)
-          until stopped?
-            sleep(sleep_time)
-            spin unless paused?
-          end
-          ch.send(nil)
+          spin unless paused?
         end
       end
     ensure
@@ -254,21 +249,22 @@ module Term
 
     # Perform a spin
     def spin
-      @mutex.synchronize do
+      data = @mutex.synchronize do
         return if @done
-        emit(:spin)
 
         if @hide_cursor && !spinning?
           write(Term::Cursor.hide)
         end
 
-        data = message.gsub(MATCHER, @frames[@current])
-        data = replace_tokens(data)
-        write(data, true)
+        rendered = message.gsub(MATCHER, @frames[@current])
+        rendered = replace_tokens(rendered)
+        write(rendered, true)
         @current = (@current + 1) % @frames.size
         @state = State::Spinning
-        data
+        rendered
       end
+      emit(:spin)
+      data
     end
 
     # Redraw the indent for this spinner, if it exists
@@ -297,9 +293,9 @@ module Term
 
       @mutex.synchronize do
         @succeeded = true
-        stop(stop_message)
-        emit(:success)
       end
+      stop(stop_message)
+      emit(:success)
     end
 
     # Finish spinning and set state to :error
@@ -308,9 +304,9 @@ module Term
 
       @mutex.synchronize do
         @succeeded = false
-        stop(stop_message)
-        emit(:error)
       end
+      stop(stop_message)
+      emit(:error)
     end
 
     # Clear the current line
