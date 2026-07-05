@@ -72,6 +72,16 @@ describe Term::Spinner do
       spinner = Term::Spinner.new(":spinner Loading :title")
       spinner.update(title: "file.txt")
     end
+
+    it "replaces tokens in rendered output" do
+      output = TestIO.new
+      spinner = Term::Spinner.new(":spinner Loading :title", output: output)
+
+      spinner.update(title: "file.txt")
+      spinner.spin
+
+      output.output.includes?("Loading file.txt").should be_true
+    end
   end
 
   describe "#spin" do

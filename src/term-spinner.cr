@@ -373,7 +373,7 @@ module Term
     # Replace any token inside string
     private def replace_tokens(string)
       @tokens.each do |name, val|
-        string = string.gsub(/\:#{name}/, val)
+        string = string.gsub(":#{name}", val)
       end
       string
     end
