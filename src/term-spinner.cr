@@ -218,7 +218,7 @@ module Term
       sleep_time = @interval
 
       spin
-      spawn(same_thread: true) do
+      spawn do
         sleep(sleep_time)
         until stopped?
           sleep(sleep_time)
